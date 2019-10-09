@@ -122,7 +122,7 @@ The mechanism for a `CLIENT{A}` to originate  `FRIENDSHIP{A->B}` is the creation
 
 `CLIENT`s default toward `INTROVERTED` `FRIENDSHIP`s, and only attempt `EXTROVERTED` `FRIENDSHIP`s when no valid `OFFER`s are available.
 
-#####`CLIENT` `FRIENDSHIP`s Lifecycle
+#### `CLIENT` `FRIENDSHIP`s Lifecycle
 
 1. A `USER`instantiates a Pollenium client `CLIENT{USER}` with
    1. Addresses of one or multiple signaling servers 
