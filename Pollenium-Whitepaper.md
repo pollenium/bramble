@@ -2,17 +2,19 @@
 
 Pollenium is an application agnostic gossip network designed to work in the browser.
 
-## Gossip Protocols
+>  ⚠️ This whitepaper is not finalized
 
-A gossip protocol is a method of propogating a message that does not rely on the trust of a central party. Gossip protocols propogate messages analagous to rumors: one party tells their peers, each of whom tells their peers. Assuming a sufficient proportion of peers honestly re-propogate the message, it is possible to sufficiently guarantee all parties will receive the message.
+## Gossip Networks
 
-### Current Applications of Gossip Protocols
+A gossip network is a method of propogating a message that does not rely on the trust of a central party. Gossip networks propogate messages analagous to rumors: one party tells their peers, each of whom tells their peers. Assuming a sufficient proportion of peers honestly re-propogate the message, it is possible to sufficiently guarantee all parties will receive the message.
 
-The following is a non-exhaustive list of gossip protocols currently in use:
+### Current Applications of Gossip Networks
 
-1. The Bitcoin blockchain (along with most public blockchains) uses a gossip protocol to propogate requests to transfer assets as well as blocks of confirmed asset transfers
-2. TOR uses a gossip protocol to propogate entry gateways for hidden services
-3. BitTorrent uses a gossip protocol to propogate peer entry notifications
+The following is a non-exhaustive list of gossip networks currently in use:
+
+1. The Bitcoin blockchain (along with most public blockchains) uses a gossip network to propogate requests to transfer assets as well as blocks of confirmed asset transfers
+2. TOR uses a gossip network to propogate entry gateways for hidden services
+3. BitTorrent uses a gossip network to propogate peer entry notifications
 
 ## Application Gnostic vs Application Agnostic Systems
 
@@ -27,23 +29,23 @@ When a system is designed for a specific set of purposes, we say it is "gnostic"
 
 Clearly, "gnostic" and "agnostic" exist on a spectrum with fuzzy boundaries.
 
-In "Current Application of Gossip Protocols", we listed three gossip protocols. Notably, all three are gnostic gossip protocols, meaning they were designed to support a specific application. While gnostic gossip protocols can offer more efficient solutions, they must be developed individually for each application.
+In "Current Application of Gossip Networks", we listed three gossip networks. Notably, all three use gnostic gossip networks, meaning they were designed to support a specific application. While gnostic gossip networks can offer more efficient solutions, they must be developed individually for each application.
 
-### Current Application Agnostic Gossip Protocols
+### Current Application Agnostic Gossip Networks
 
-There are two main application agnostic gossip protocols:
+There are two main application agnostic gossip networks:
 
 1. Whisper
 2. BitMessage
 
-Both these gossip protocols are fundamentally very similar with very few differeneces in overall design. Similarly, Pollenium does not fundamentally differ from the design of these current application agnostic gossip protocols.
+Both these gossip networks are fundamentally very similar in  design. Pollenium, also, does not fundamentally differ from the design of these current application agnostic gossip networks.
 
 The following three design decisions are shared between Whisper, BitMessage, and Pollenium:
 
 1. Hashcash for spam prevention
 2. XOR based peer rankings
 
- Rather than make any fundamental design changes, Pollenium uses WebRTC rather than simple TCP/IP to solve the "Alpha vs Beta Peer Problem"
+ Rather than make any fundamental design changes, Pollenium makes an important implementation change. Both Whisper and BitMessage use TCP/IP for networking and message propogation. Pollenium uses WebRTC in order to solve the "Alpha vs Beta Peer Problem".
 
 ## The Alpha vs Beta Peer Problem
 
@@ -62,7 +64,7 @@ Beta devices, on the other hand, can only connect to alpha devices. Furthermore,
 | Beta           | Alpha            | ✅        |
 | Beta           | Beta             | ❌        |
 
-Alpha devices are an absolute necessity for commercial service providers such as Google and Facebook. However, beta devices are sufficient for average consumer internet usage. Alpha devices are also more expensive and/or more difficult to setup and operate.
+Alpha devices are an absolute necessity for commercial service providers such as Google and Facebook. However, beta devices are common for consumer internet usage. Alpha devices are also more expensive and/or more difficult to setup and operate.
 
 | Device                                                       | Type  | Typical Marginal Cost | Ease   | Typical User                |
 | ------------------------------------------------------------ | ----- | --------------------- | ------ | --------------------------- |
@@ -71,21 +73,17 @@ Alpha devices are an absolute necessity for commercial service providers such as
 | Browser software                                             | Beta  | $0                    | High   | Everyone                    |
 | Mobile phone app                                             | Beta  | $0                    | High   | Everyone                    |
 
-The net result is very few internet users operate alpha devices.
+### Implications for Gossip Networks
 
-### Implications for Gossip Protocols
+While gossip network are often described as "peer to peer", they are in practice "beta peer to alpha peer to beta peer". This is due not to the fundamental properties of gossip networks, but rather due to the reality of the internet in the real world.
 
-While gossip protocol are often described as "peer to peer", they are in practice "beta peer to alpha peer to beta peer". This is due not to the fundamental properties of gossip protocols, but rather due to the reality of the internet in the real world.
+Earlier we stated that the message propogation guarentees of gossip networks were based on a sufficient proportion of honest peers. However, that was based on the assumption that all peers had equal ability to connect to their peers. Since some peers are alpha peers and other peers are beta peers, we also require a sufficient proportion of honest *alpha* peers.
 
-Renting an alpha device (such as renting a VM from a cloud provider) is costly, and turning a beta device into an alpha device 
-
-Earlier we stated that the message propogation guarentees of gossip protocols were based on a sufficient proportion of honest peers. However, that was based on the assumption that all peers were equal. Since some peers are alpha peers and other peers are beta peers, we also require a sufficient proportion of honest *alpha* peers.
-
-Since alpha devices are typically more expensive and/or cumbersome, it is usually unwise to expect a sufficient subset of peers to run them voluntarily. This greatly restricts the potential of gossip protocols in application design.
+Since alpha devices are typically more expensive and/or cumbersome, it is unwise to expect a sufficient subset of peers to run them voluntarily. This greatly restricts the potential of gossip networks in application design.
 
 ### WebRTC
 
-WebRTC is a relatively recent technology adopted by W3C, the organization that creates web standards and is now implemented in most web browsers. WebRTC allows for a full range of communication between alpha and beta devices.
+WebRTC is a relatively recent technology adopted by W3C, the organization that creates web standards. WebRTC is now implemented in most web browsers. WebRTC allows for a full range of communication between alpha and beta devices.
 
 | Sending Device | Receiving Device | Success? |
 | -------------- | ---------------- | -------- |
@@ -95,8 +93,6 @@ WebRTC is a relatively recent technology adopted by W3C, the organization that c
 | Beta           | Beta             | ✅        |
 
 While WebRTC is not the only solution, it is the only solution that runs in web browsers.
-
-For this reason, Pollenium decides to use WebRTC rather than TCP/IP.
 
 #### Signaling Servers
 
@@ -152,7 +148,58 @@ The mechanism for a `CLIENT{A}` to originate  `FRIENDSHIP{A->B}` is the creation
    1. `CLIENT{USER}` creates `OFFER{USER}` and uploads it to the signaling servers
    2. Step 6 is repeated, with the roles of `USER` and `PEER` reversed
 
-### `FRIENDSHIP MESSAGE`s
+#### `FRIENDSHIP` Rankings
 
-A `FRIENDSHIP MESSAGE` is a message sent between two `CLIENT`s on the pollenium network.
+`CLIENT`s may receives more `OFFER{PEER}`s than its `FRIENDSHIP_MAX`. `CLIENT`s should rank `OFFER{PEER}`s by their `CLIENT_NONCE{PEER}`. To do so, the `DISTANCE{USER, PEER}` between two peers is calculated by taking the bitwise XOR of `CLIENT_NONCE{PEER}` and `CLIENT_NONCE{USER}`.
+
+````
+DISTANCE{USER, PEER}  = XOR(CLIENT_NONCE{USER}, CLIENT_NONCE{PEER})
+````
+
+Clients prioritize `FRIENDSHIP`s with the lowest `DISTANCE{USER, PEER}`, terminating `FRIENDSHIP`s  with the highest `DISTANCE{USER, PEER}` if necessary..
+
+### `MISSIVE`s
+
+A `MISSIVE` is a message sent between two `CLIENT`s on the pollenium network. Each `MISSIVE` contains the following:
+
+| Field              | Length  | Description                                    |
+| ------------------ | ------- | ---------------------------------------------- |
+| `VERSION`          | 1       | The version id, which is currently only `0`.   |
+| `TIMESTAMP`        | 5       | Epoch time (seconds) the `MISSIVE` was created |
+| `DIFFICULTY`       | 1       |                                                |
+| `APPLICATION_ID`   | 32      | An aplication-unique identifier                |
+| `APPLICATION_DATA` | Dynamic | Arbitrary application data                     |
+| `NONCE`            | 32      | The                                            |
+
+##### Prioritization
+
+Like other application-agnostic gossip networks, Pollenium uses proof of work to prioritize `MISSIVE`s.
+
+When generating a `MISSIVE` a `CLIENT` will choose a whole-number `DIFFICULTY` between `0` and `255` inclusive.
+
+````
+DIFFICULTY ⋹ {0, 1, ..., 254, 255}
+````
+
+The `CLIENT` will then derive a `MISSIVE_ID_MAX` using the following formula:
+
+````
+A = 2 ^ (255 - DIFFICULTY)
+B = APPLICATION_DATA.LENGTH + COVER
+MISSIVE_ID_MAX = ROUND_DOWN(A/B)
+````
+
+All `MISSIVES` with a `VERSION` of `0` have a `COVER` of `69`.
+
+The `CLIENT` will then generate random `NONCE`s and derive the `MISSIVE_ID` until it finds a `MISSIVE_ID` less than or equal to `MISSIVE_ID_MAX`.
+
+````
+FRIENDSHIP_ID <= FRIENDSHIP_ID_MAX
+````
+
+ `FRIENDSHIP_ID` is the SHA256 hash of the encoded `MISSIVE`.
+
+````
+FRIENDSHIP_ID = SHA256(MISSIVE.ENCODE())
+````
 
