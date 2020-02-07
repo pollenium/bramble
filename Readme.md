@@ -1,8 +1,14 @@
-# Pollenium
+# Bramble
 
-Pollenium is an application agnostic gossip network designed to work in the browser.
+Bramble is an application agnostic gossip network designed to work in the browser.
 
 >  ⚠️ This whitepaper is not finalized
+
+## Clients
+
+| Language         | Name                         | Repo                             |
+| ---------------- | ---------------------------- | -------------------------------- |
+| Typescript       | Anemone                      | https://github.com/pollenium/anemone |
 
 ## Gossip Networks
 
@@ -38,14 +44,14 @@ There are two main application agnostic gossip networks:
 1. Whisper
 2. BitMessage
 
-Both these gossip networks are fundamentally very similar in  design. Pollenium, also, does not fundamentally differ from the design of these current application agnostic gossip networks.
+Both these gossip networks are fundamentally very similar in  design. Bramble, also, does not fundamentally differ from the design of these current application agnostic gossip networks.
 
-The following three design decisions are shared between Whisper, BitMessage, and Pollenium:
+The following three design decisions are shared between Whisper, BitMessage, and Bramble:
 
 1. Hashcash for spam prevention
 2. XOR based peer rankings
 
- Rather than make any fundamental design changes, Pollenium makes an important implementation change. Both Whisper and BitMessage use TCP/IP for networking and message propogation. Pollenium uses WebRTC in order to solve the "Alpha vs Beta Peer Problem".
+ Rather than make any fundamental design changes, Bramble makes an important implementation change. Both Whisper and BitMessage use TCP/IP for networking and message propogation. Bramble uses WebRTC in order to solve the "Alpha vs Beta Peer Problem".
 
 ## The Alpha vs Beta Peer Problem
 
@@ -98,17 +104,17 @@ While WebRTC is not the only solution, it is the only solution that runs in web 
 
 While WebRTC does allow the full range of communication between alpha and beta devices, it does have on major drawback. It requires a centralized and trustworthy signaling server to help devices connect. However, it is not necessary that a sufficient proportion of signaling servers be trustworthy. Rather, only a *single* signaling server is required to be trustworthy. Furthermore, no messages are passed to or from the signaling server, minimizing the damage an untrustworthy signaling server can inflict to censorship of individual peers, rather than selective censorship of individual messages.
 
-## Pollenium Design
+## Bramble Design
 
-The following section contains a mid-level overview of Pollenium.
+The following section contains a mid-level overview of Bramble.
 
 ### Encryption
 
-Pollenium contains no additional layers of encryption. WebRTC connections are already encrypted, and no additional encryption is required. Communication between Pollenium clients and signaling servers are encrypted if the signaling servers support WSS. For this reason, signaling servers should implement WSS and clients should only connect to signaling servers over WSS.
+Bramble contains no additional layers of encryption. WebRTC connections are already encrypted, and no additional encryption is required. Communication between Bramble clients and signaling servers are encrypted if the signaling servers support WSS. For this reason, signaling servers should implement WSS and clients should only connect to signaling servers over WSS.
 
 #### `FRIENDSHIP`s
 
-A `FRIENDSHIP` is a WebRTC connection between two `CLIENT`s on the Pollenium network.
+A `FRIENDSHIP` is a WebRTC connection between two `CLIENT`s on the Bramble network.
 
  `FRIENDSHIP`s are `INTROVERTED` or `EXTROVERTED` in respect to a `CLIENT`, depending on weather the `CLIENT` originated the `FRIENDSHIP`.
 
@@ -120,8 +126,8 @@ The mechanism for a `CLIENT{A}` to originate  `FRIENDSHIP{A->B}` is the creation
 
 #### `CLIENT` `FRIENDSHIP`s Lifecycle
 
-1. A `USER`instantiates a Pollenium client `CLIENT{USER}` with
-   1. Addresses of one or multiple signaling servers 
+1. A `USER`instantiates a Bramble client `CLIENT{USER}` with
+   1. Addresses of one or multiple signaling servers
    2. A `FRIENDSHIPS_MAX{USER}` which describes the maximum number of `FRIENDSHIP{USER}`s `CLIENT{USER}` will make
 2. `CLIENT{USER}` randomly generates a `NONCE{USER}`
 3. `CLIENT{USER}` connects to the signaling servers using websockets
@@ -139,7 +145,7 @@ The mechanism for a `CLIENT{A}` to originate  `FRIENDSHIP{A->B}` is the creation
       2. The `OFFER_ID{OFFER{PEER}}` , derived by hashing  `OFFER{PEER}`
       3. A `SESSION_DESCRIPTION_PROTOCOL{USER}` which contains information necessary for `CLIENT{PEER}` to negotiate a WebRTC connection with `CLIENT{USER}`
    3. The `ANSWER{USER}` is uploaded to the signaling server which relayed the `OFFER{PEER}`
-   4. Using the `OFFER_ID{OFFER{PEER}}` included in the `ANSWER{USER}`, the signaling server relays the `ANSWER{USER}` to  `CLIENT{PEER}` 
+   4. Using the `OFFER_ID{OFFER{PEER}}` included in the `ANSWER{USER}`, the signaling server relays the `ANSWER{USER}` to  `CLIENT{PEER}`
    5. `CLIENT{PEER}` completes the WebRTC connection using information in `SESSION_DESCRIPTION_PROTOCOL{USER}`
 7. `CLIENT{USER}` will repeat step 6 until either:
    1. The number of `FRIENDSHIP{USER}`s is equal to `FRIENDSHIP_MAX{USER}`
@@ -160,7 +166,7 @@ Clients prioritize `FRIENDSHIP`s with the lowest `DISTANCE{USER, PEER}`, termina
 
 ### `MISSIVE`s
 
-A `MISSIVE` is a message sent between two `CLIENT`s on the pollenium network. Each `MISSIVE` contains the following:
+A `MISSIVE` is a message sent between two `CLIENT`s on the Bramble network. Each `MISSIVE` contains the following:
 
 | Field              | Length  | Description                                    |
 | ------------------ | ------- | ---------------------------------------------- |
@@ -173,7 +179,7 @@ A `MISSIVE` is a message sent between two `CLIENT`s on the pollenium network. Ea
 
 ##### Prioritization
 
-Like other application-agnostic gossip networks, Pollenium uses proof of work to prioritize `MISSIVE`s.
+Like other application-agnostic gossip networks, Bramble uses proof of work to prioritize `MISSIVE`s.
 
 When generating a `MISSIVE` a `CLIENT` will choose a whole-number `DIFFICULTY` between `0` and `255` inclusive.
 
@@ -202,4 +208,3 @@ FRIENDSHIP_ID <= FRIENDSHIP_ID_MAX
 ````
 FRIENDSHIP_ID = SHA256(MISSIVE.ENCODE())
 ````
-
